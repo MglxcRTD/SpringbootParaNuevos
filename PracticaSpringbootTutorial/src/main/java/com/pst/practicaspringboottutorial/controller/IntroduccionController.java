@@ -23,8 +23,8 @@ public class IntroduccionController {
 
     }
 
-    @GetMapping("/getpersona")
-    public Persona read(@RequestBody String nombre){
+    @GetMapping("/getpersona/{nombre}")
+    public Persona read(@PathVariable String nombre){
         Persona p = personaService.buscarpersona(nombre);
         return p;
     }

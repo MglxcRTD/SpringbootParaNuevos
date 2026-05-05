@@ -12,7 +12,7 @@ public class PersonaService {
     PersonaRepository personaRepository;
 
     public Persona buscarpersona(String nombre) {
-      Persona p = personaRepository.findbynombre(nombre).get();
+      Persona p = personaRepository.findByNombre(nombre).orElse(null);
       return p;
     }
 }
