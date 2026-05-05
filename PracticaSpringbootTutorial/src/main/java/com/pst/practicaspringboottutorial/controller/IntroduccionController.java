@@ -1,14 +1,11 @@
 package com.pst.practicaspringboottutorial.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class IntroduccionController {
-    String rutaDatos = "../consltas.json";
+    String rutaDatos = "../consultas.json";
 
     @GetMapping("/estado")
     public String intro(){
@@ -20,14 +17,17 @@ public class IntroduccionController {
 
     }
 
+    @GetMapping("")
     public void read(){
 
     }
 
+    @PutMapping("")
     public void update(){
 
     }
 
+    @DeleteMapping("")
     public void delete(){
 
     }
