@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Operaciones - Santandeudas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: #f0f2f5;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    nav {
+      background: #ff0000;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 56px;
+    }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+    nav .nav-links a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-left: 16px;
+    }
+    nav .nav-links a:hover { text-decoration: underline; }
+
+    .red-bar {
+      height: 3px;
+      background: linear-gradient(90deg, #c0392b, #e74c3c, #c0392b);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .sub { font-size: 14px; color: #888; margin-bottom: 24px; }
+
+    .card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .card h2 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ff2222;
+    }
+
+    .ops-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .op-box {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+    .op-box h3 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    .op-box.ingresar h3 { color: #27ae60; }
+    .op-box.retirar h3 { color: #c0392b; }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: 'Source Sans 3', sans-serif;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    .field input:focus, .field select:focus { border-color: #ff2929; }
+
+    button {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover { opacity: 0.85; }
+
+    .btn-ingresar { background: #27ae60; color: white; }
+    .btn-retirar { background: #c0392b; color: white; }
+
+    #mensaje {
+      min-height: 18px;
+      margin-top: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    th, td { width: 33.33%; }
+    th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      padding: 10px 8px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    td {
+      padding: 12px 8px;
+      font-size: 14px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    tbody tr:hover { background: #fafafa; }
+    .empty-row { text-align: center; padding: 32px 0; color: #aaa; font-size: 14px; }
+    .dinero-negativo { color: #c0392b; font-weight: 700; }
+    .dinero-positivo { color: #27ae60; font-weight: 700; }
+
+    footer { text-align: center; padding: 24px; font-size: 11px; color: #bbb; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Santandeudas</div>
+    <div class="nav-links">
+      <a href="FrontEjemplo.html">Registro</a>
+      <a href="Operaciones.html"><strong>Operaciones</strong></a>
+    </div>
+  </nav>
+  <div class="red-bar"></div>
+
+  <div class="container">
+
+    <h1>Operaciones</h1>
+    <p class="sub">Ingresar y retirar dinero de clientes</p>
+
+    <!-- OPERACIONES -->
+    <div class="card">
+      <h2>Realizar operacion</h2>
+      <div class="ops-grid">
+
+        <!-- INGRESAR -->
+        <div class="op-box ingresar">
+          <h3>Ingresar dinero</h3>
+          <div class="field">
+            <label>Cliente</label>
+            <select id="selIngresar">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cantidad</label>
+            <input type="number" id="cantIngresar" placeholder="0.00" step="0.01" min="0.01" />
+          </div>
+          <button class="btn-ingresar" onclick="operar('ingresar')">Ingresar</button>
+        </div>
+
+        <!-- RETIRAR -->
+        <div class="op-box retirar">
+          <h3>Retirar dinero</h3>
+          <div class="field">
+            <label>Cliente</label>
+            <select id="selRetirar">
+              <option value="">Cargando...</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cantidad</label>
+            <input type="number" id="cantRetirar" placeholder="0.00" step="0.01" min="0.01" />
+          </div>
+          <button class="btn-retirar" onclick="operar('retirar')">Retirar</button>
+        </div>
+
+      </div>
+      <div id="mensaje"></div>
+    </div>
+
+    <!-- TABLA USUARIOS -->
+    <div class="card">
+      <h2>Clientes registrados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dinero</th>
+          </tr>
+        </thead>
+        <tbody id="tabla">
+          <tr><td colspan="3" class="empty-row">Sin registros</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <footer>Santandeudas &copy; 2026 - Ejemplo CRUD de Spring Boot</footer>
+
+  <script>
+    const API = "http://localhost:8080/api/personas";
+
+    let usuarios = [];
+
+    // READ (GET) - carga tabla y selects
+    function listar() {
+      fetch(API)
+        .then(res => res.json())
+        .then(data => {
+          usuarios = data;
+          renderTabla();
+          renderSelects();
+        })
+        .catch(() => msg("No se pudo conectar al backend", "#c0392b"));
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById("tabla");
+      if (usuarios.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="empty-row">Sin registros</td></tr>';
+        return;
+      }
+      tbody.innerHTML = usuarios.map(p => `
+        <tr>
+          <td style="color:#888">${p.id}</td>
+          <td><strong>${p.nombre}</strong></td>
+          <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
+            ${p.dinero.toFixed(2)} $
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderSelects() {
+      const opciones = usuarios.map(p =>
+        `<option value="${p.id}">${p.nombre} (${p.dinero.toFixed(2)} $)</option>`
+      ).join("");
+      const vacio = '<option value="">-- Selecciona --</option>';
+      document.getElementById("selIngresar").innerHTML = vacio + opciones;
+      document.getElementById("selRetirar").innerHTML = vacio + opciones;
+    }
+
+    // UPDATE (PUT) - ingresar o retirar
+    function operar(tipo) {
+      const selId = tipo === "ingresar" ? "selIngresar" : "selRetirar";
+      const cantId = tipo === "ingresar" ? "cantIngresar" : "cantRetirar";
+
+      const id = document.getElementById(selId).value;
+      const cantidad = parseFloat(document.getElementById(cantId).value);
+
+      if (!id) { msg("Selecciona un cliente", "#c4a35a"); return; }
+      if (isNaN(cantidad) || cantidad <= 0) { msg("Cantidad debe ser mayor a 0", "#c4a35a"); return; }
+
+      // Buscar usuario actual
+      const usuario = usuarios.find(u => u.id == id);
+      if (!usuario) { msg("Cliente no encontrado", "#c0392b"); return; }
+
+      // Calcular nuevo dinero
+      const nuevoDinero = tipo === "ingresar"
+        ? usuario.dinero + cantidad
+        : usuario.dinero - cantidad;
+
+      fetch(API + "/" + id, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: usuario.nombre,
+          contrasena: usuario.contrasena,
+          dinero: nuevoDinero
+        })
+      })
+        .then(() => {
+          const accion = tipo === "ingresar" ? "Ingresado" : "Retirado";
+          msg(accion + ": " + cantidad.toFixed(2) + " $", "#27ae60");
+          document.getElementById(cantId).value = "";
+          listar();
+        })
+        .catch(() => msg("Error en la operacion", "#c0392b"));
+    }
+
+    function msg(texto, color) {
+      const el = document.getElementById("mensaje");
+      el.textContent = texto;
+      el.style.color = color;
+    }
+
+    listar();
+  </script>
+
+</body>
+</html>

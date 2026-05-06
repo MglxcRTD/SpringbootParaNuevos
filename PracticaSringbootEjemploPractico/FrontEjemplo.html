@@ -2,19 +2,19 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>CRUD Spring Boot</title>
+  <title>Registro - Santandeudas</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap');
-
+ 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
+ 
     body {
       font-family: 'Source Sans 3', sans-serif;
       background: #f0f2f5;
       color: #1a1a2e;
       min-height: 100vh;
     }
-
+ 
     nav {
       background: #ff0000;
       color: white;
@@ -24,29 +24,29 @@
       padding: 0 32px;
       height: 56px;
     }
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
     .logo { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-    .logo-img { height: 24px; width: auto; }
-    nav .nav-links { font-size: 13px; color: rgba(255,255,255,0.7); }
-
+    nav .nav-links a {
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-left: 16px;
+    }
+    nav .nav-links a:hover { text-decoration: underline; }
+ 
     .red-bar {
       height: 3px;
       background: linear-gradient(90deg, #c0392b, #e74c3c, #c0392b);
     }
-
+ 
     .container {
       max-width: 700px;
       margin: 0 auto;
       padding: 32px 20px;
     }
-
+ 
     h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
     .sub { font-size: 14px; color: #888; margin-bottom: 24px; }
-
+ 
     .card {
       background: white;
       border: 1px solid #e0e0e0;
@@ -64,10 +64,10 @@
       padding-bottom: 10px;
       border-bottom: 2px solid #ff2222;
     }
-
+ 
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin-bottom: 12px;
     }
@@ -90,9 +90,9 @@
       outline: none;
     }
     .field input:focus { border-color: #ff2929; }
-
+ 
     .form-actions { display: flex; gap: 8px; }
-
+ 
     button {
       font-family: 'Source Sans 3', sans-serif;
       font-size: 13px;
@@ -103,21 +103,19 @@
       cursor: pointer;
     }
     button:hover { opacity: 0.85; }
-
+ 
     .btn-guardar { background: #ff0000; color: white; }
-    .btn-cancelar { background: #e0e0e0; color: #555; }
-    .btn-editar { background: #b33f3f; color: white; padding: 6px 14px; }
     .btn-borrar { background: #c0392b; color: white; padding: 6px 14px; }
-
+ 
     #mensaje {
       min-height: 18px;
       margin-top: 10px;
       font-size: 13px;
       font-weight: 600;
     }
-
+ 
     table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    th, td { width: 20%; }
+    th, td { width: 25%; }
     th {
       text-align: left;
       font-size: 11px;
@@ -134,34 +132,32 @@
       border-bottom: 1px solid #f0f0f0;
     }
     tbody tr:hover { background: #fafafa; }
-    .td-actions { display: flex; gap: 6px; }
     .empty-row { text-align: center; padding: 32px 0; color: #aaa; font-size: 14px; }
     .dinero-negativo { color: #c0392b; font-weight: 700; }
     .dinero-positivo { color: #27ae60; font-weight: 700; }
-
+ 
     footer { text-align: center; padding: 24px; font-size: 11px; color: #bbb; }
   </style>
 </head>
 <body>
-
+ 
   <nav>
-    <div class="logo-container">
-      <div class="logo">Santandeudas</div>
-      <img src="logo_santander.png" alt="Logo" class="logo-img">
+    <div class="logo">Santandeudas</div>
+    <div class="nav-links">
+      <a href="FrontEjemplo.html"><strong>Registro</strong></a>
+      <a href="Operaciones.html">Operaciones</a>
     </div>
-    <div class="nav-links">Ejemplo CRUD</div>
   </nav>
   <div class="red-bar"></div>
-
+ 
   <div class="container">
-
-    <h1>Gestion de Clientes</h1>
-    <p class="sub">Create - Read - Update - Delete</p>
-
-  
+ 
+    <h1>Registro de Usuarios</h1>
+    <p class="sub">Crear nuevos clientes del banco</p>
+ 
+    <!-- FORMULARIO REGISTRO -->
     <div class="card">
-      <h2 id="formTitle">Nuevo cliente</h2>
-      <input type="hidden" id="idEdit" />
+      <h2>Nuevo cliente</h2>
       <div class="form-grid">
         <div class="field">
           <label>Nombre</label>
@@ -171,19 +167,14 @@
           <label>Contrasena</label>
           <input type="password" id="contrasena" placeholder="********" />
         </div>
-        <div class="field">
-          <label>Dinero</label>
-          <input type="number" id="dinero" placeholder="0.00" step="0.01" />
-        </div>
       </div>
       <div class="form-actions">
-        <button class="btn-guardar" onclick="guardar()">Guardar</button>
-        <button class="btn-cancelar" onclick="cancelar()" id="btnCancel" style="display:none">Cancelar</button>
+        <button class="btn-guardar" onclick="registrar()">Registrar</button>
       </div>
       <div id="mensaje"></div>
     </div>
-
-
+ 
+    <!-- TABLA USUARIOS -->
     <div class="card">
       <h2>Clientes registrados</h2>
       <table>
@@ -191,112 +182,87 @@
           <tr>
             <th>ID</th>
             <th>Nombre</th>
-            <th>Contrasena</th>
             <th>Dinero</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody id="tabla">
-          <tr><td colspan="5" class="empty-row">Sin registros</td></tr>
+          <tr><td colspan="4" class="empty-row">Sin registros</td></tr>
         </tbody>
       </table>
     </div>
-
+ 
   </div>
-
+ 
   <footer>Santandeudas &copy; 2026 - Ejemplo CRUD de Spring Boot</footer>
-
-  
+ 
   <script>
-    
     const API = "http://localhost:8080/api/personas";
-
-    
+ 
+    // CREATE (POST)
+    function registrar() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const contrasena = document.getElementById("contrasena").value.trim();
+ 
+      if (!nombre || !contrasena) { msg("Rellena nombre y contrasena", "#c4a35a"); return; }
+ 
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, contrasena, dinero: 0 })
+      })
+        .then(() => {
+          msg("Cliente registrado", "#27ae60");
+          document.getElementById("nombre").value = "";
+          document.getElementById("contrasena").value = "";
+          listar();
+        })
+        .catch(() => msg("Error al registrar", "#c0392b"));
+    }
+ 
+    // READ (GET)
     function listar() {
       fetch(API)
         .then(res => res.json())
         .then(data => {
           const tbody = document.getElementById("tabla");
           if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="empty-row">Sin registros</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Sin registros</td></tr>';
             return;
           }
           tbody.innerHTML = data.map(p => `
             <tr>
               <td style="color:#888">${p.id}</td>
               <td><strong>${p.nombre}</strong></td>
-              <td style="color:#888">********</td>
               <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
                 ${p.dinero.toFixed(2)} $
               </td>
               <td>
-                <div class="td-actions">
-                  <button class="btn-editar" onclick='editar(${JSON.stringify(p)})'>Editar</button>
-                  <button class="btn-borrar" onclick="borrar(${p.id})">Borrar</button>
-                </div>
+                <button class="btn-borrar" onclick="borrar(${p.id})">Borrar</button>
               </td>
             </tr>
           `).join("");
         })
         .catch(() => msg("No se pudo conectar al backend", "#c0392b"));
     }
-
-   
-    function guardar() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const contrasena = document.getElementById("contrasena").value.trim();
-      const dinero = parseFloat(document.getElementById("dinero").value);
-
-      if (!nombre || !contrasena) { msg("Rellena nombre y contrasena", "#c4a35a"); return; }
-      if (isNaN(dinero)) { msg("Dinero debe ser un numero", "#c4a35a"); return; }
-
-      const id = document.getElementById("idEdit").value;
-
-      fetch(id ? API + "/" + id : API, {
-        method: id ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, contrasena, dinero })
-      })
-        .then(() => { msg(id ? "Actualizado" : "Creado", "#27ae60"); cancelar(); listar(); })
-        .catch(() => msg("Error al guardar", "#c0392b"));
-    }
-
-  
+ 
+    // DELETE
     function borrar(id) {
-      if (!confirm("Eliminar?")) return;
+      if (!confirm("Eliminar cliente?")) return;
       fetch(API + "/" + id, { method: "DELETE" })
         .then(() => { msg("Eliminado", "#27ae60"); listar(); })
         .catch(() => msg("Error al borrar", "#c0392b"));
     }
-
-   
-    function editar(p) {
-      document.getElementById("idEdit").value = p.id;
-      document.getElementById("nombre").value = p.nombre;
-      document.getElementById("contrasena").value = p.contrasena;
-      document.getElementById("dinero").value = p.dinero;
-      document.getElementById("formTitle").textContent = "Editando #" + p.id;
-      document.getElementById("btnCancel").style.display = "inline";
-    }
-
-    function cancelar() {
-      document.getElementById("idEdit").value = "";
-      document.getElementById("nombre").value = "";
-      document.getElementById("contrasena").value = "";
-      document.getElementById("dinero").value = "";
-      document.getElementById("formTitle").textContent = "Nuevo cliente";
-      document.getElementById("btnCancel").style.display = "none";
-    }
-
+ 
     function msg(texto, color) {
       const el = document.getElementById("mensaje");
       el.textContent = texto;
       el.style.color = color;
     }
-
-
+ 
     listar();
   </script>
-
+ 
 </body>
 </html>
+ 
