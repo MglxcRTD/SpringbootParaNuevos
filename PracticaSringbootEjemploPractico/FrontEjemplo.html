@@ -195,72 +195,92 @@
   </div>
  
   <footer>Santandeudas &copy; 2026 - Ejemplo CRUD de Spring Boot</footer>
- 
+
   <script>
-    const API = "http://localhost:8080/api/personas";
- 
-    // CREATE (POST)
-    function registrar() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const contrasena = document.getElementById("contrasena").value.trim();
- 
-      if (!nombre || !contrasena) { msg("Rellena nombre y contrasena", "#c4a35a"); return; }
- 
-      fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, contrasena, dinero: 0 })
-      })
-        .then(() => {
-          msg("Cliente registrado", "#27ae60");
-          document.getElementById("nombre").value = "";
-          document.getElementById("contrasena").value = "";
-          listar();
-        })
-        .catch(() => msg("Error al registrar", "#c0392b"));
-    }
- 
-    // READ (GET)
-    function listar() {
-      fetch(API)
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.getElementById("tabla");
-          if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Sin registros</td></tr>';
-            return;
+      const API = "http://localhost:8080/api/personas";
+
+      // 1. LISTAR (GET) - Se ejecuta al abrir la web
+      async function listar() {
+          try {
+              const res = await fetch(API);
+              const data = await res.json();
+              const tbody = document.getElementById("tabla");
+
+              if (data.length === 0) {
+                  tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Sin registros</td></tr>';
+                  return;
+              }
+
+              tbody.innerHTML = data.map(p => `
+                  <tr>
+                    <td style="color:#888">${p.id}</td>
+                    <td><strong>${p.nombre}</strong></td>
+                    <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
+                      ${p.dinero.toFixed(2)} €
+                    </td>
+                    <td>
+                      <button class="btn-borrar" onclick="borrar(${p.id})">Borrar</button>
+                    </td>
+                  </tr>
+              `).join("");
+          } catch (error) {
+              msg("No se pudo conectar al backend", "#c0392b");
           }
-          tbody.innerHTML = data.map(p => `
-            <tr>
-              <td style="color:#888">${p.id}</td>
-              <td><strong>${p.nombre}</strong></td>
-              <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
-                ${p.dinero.toFixed(2)} $
-              </td>
-              <td>
-                <button class="btn-borrar" onclick="borrar(${p.id})">Borrar</button>
-              </td>
-            </tr>
-          `).join("");
-        })
-        .catch(() => msg("No se pudo conectar al backend", "#c0392b"));
-    }
- 
-    // DELETE
-    function borrar(id) {
-      if (!confirm("Eliminar cliente?")) return;
-      fetch(API + "/" + id, { method: "DELETE" })
-        .then(() => { msg("Eliminado", "#27ae60"); listar(); })
-        .catch(() => msg("Error al borrar", "#c0392b"));
-    }
- 
-    function msg(texto, color) {
-      const el = document.getElementById("mensaje");
-      el.textContent = texto;
-      el.style.color = color;
-    }
- 
-    listar();
+      }
+
+      // 2. REGISTRAR (POST)
+      async function registrar() {
+          const nombre = document.getElementById("nombre").value.trim();
+          const contrasena = document.getElementById("contrasena").value.trim();
+
+          if (!nombre || !contrasena) {
+              msg("Rellena nombre y contraseña", "#c4a35a");
+              return;
+          }
+
+          const personaParaEnviar = {
+              nombre: nombre,
+              contrasena: contrasena,
+              dinero: 0
+          };
+
+          try {
+              const res = await fetch(API, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(personaParaEnviar)
+              });
+              if (res.ok) {
+                  msg("Cliente registrado en Santandeudas", "#27ae60");
+                  document.getElementById("nombre").value = "";
+                  document.getElementById("contrasena").value = "";
+                  listar();
+              }
+          } catch (error) {
+              msg("Error al registrar", "#c0392b");
+          }
+      }
+
+      // 3. BORRAR (DELETE)
+      async function borrar(id) {
+          if (!confirm("¿Eliminar cliente?")) return;
+          try {
+              await fetch(`${API}/${id}`, { method: "DELETE" });
+              msg("Cliente eliminado", "#27ae60");
+              listar();
+          } catch (error) {
+              msg("Error al borrar", "#c0392b");
+          }
+      }
+
+      function msg(texto, color) {
+          const el = document.getElementById("mensaje");
+          el.textContent = texto;
+          el.style.color = color;
+      }
+
+      // Arrancamos la tabla nada más cargar la página
+      window.onload = listar;
   </script>
  
 </body>

@@ -236,93 +236,92 @@
   <footer>Santandeudas &copy; 2026 - Ejemplo CRUD de Spring Boot</footer>
 
   <script>
-    const API = "http://localhost:8080/api/personas";
+      const API = "http://localhost:8080/api/personas";
+      let usuarios = [];
 
-    let usuarios = [];
-
-    // READ (GET) - carga tabla y selects
-    function listar() {
-      fetch(API)
-        .then(res => res.json())
-        .then(data => {
-          usuarios = data;
-          renderTabla();
-          renderSelects();
-        })
-        .catch(() => msg("No se pudo conectar al backend", "#c0392b"));
-    }
-
-    function renderTabla() {
-      const tbody = document.getElementById("tabla");
-      if (usuarios.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" class="empty-row">Sin registros</td></tr>';
-        return;
+      // 1. CARGAR DATOS (GET)
+      async function listar() {
+          try {
+              const res = await fetch(API);
+              usuarios = await res.json();
+              renderTabla();
+              renderSelects();
+          } catch (error) {
+              msg("No se pudo conectar al backend", "#c0392b");
+          }
       }
-      tbody.innerHTML = usuarios.map(p => `
-        <tr>
-          <td style="color:#888">${p.id}</td>
-          <td><strong>${p.nombre}</strong></td>
-          <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
-            ${p.dinero.toFixed(2)} $
-          </td>
-        </tr>
-      `).join("");
-    }
 
-    function renderSelects() {
-      const opciones = usuarios.map(p =>
-        `<option value="${p.id}">${p.nombre} (${p.dinero.toFixed(2)} $)</option>`
-      ).join("");
-      const vacio = '<option value="">-- Selecciona --</option>';
-      document.getElementById("selIngresar").innerHTML = vacio + opciones;
-      document.getElementById("selRetirar").innerHTML = vacio + opciones;
-    }
+      function renderTabla() {
+          const tbody = document.getElementById("tabla");
+          if (usuarios.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="3" class="empty-row">Sin registros</td></tr>';
+              return;
+          }
+          tbody.innerHTML = usuarios.map(p => `
+              <tr>
+                  <td style="color:#888">${p.id}</td>
+                  <td><strong>${p.nombre}</strong></td>
+                  <td class="${p.dinero < 0 ? 'dinero-negativo' : 'dinero-positivo'}">
+                      ${p.dinero.toFixed(2)} €
+                  </td>
+              </tr>
+          `).join("");
+      }
 
-    // UPDATE (PUT) - ingresar o retirar
-    function operar(tipo) {
-      const selId = tipo === "ingresar" ? "selIngresar" : "selRetirar";
-      const cantId = tipo === "ingresar" ? "cantIngresar" : "cantRetirar";
+      function renderSelects() {
+          const opciones = usuarios.map(p =>
+              `<option value="${p.id}">${p.nombre} (${p.dinero.toFixed(2)} €)</option>`
+          ).join("");
+          const vacio = '<option value="">-- Selecciona cliente --</option>';
+          document.getElementById("selIngresar").innerHTML = vacio + opciones;
+          document.getElementById("selRetirar").innerHTML = vacio + opciones;
+      }
 
-      const id = document.getElementById(selId).value;
-      const cantidad = parseFloat(document.getElementById(cantId).value);
+      // 2. OPERAR (PUT)
+      async function operar(tipo) {
+          const selId = tipo === "ingresar" ? "selIngresar" : "selRetirar";
+          const cantId = tipo === "ingresar" ? "cantIngresar" : "cantRetirar";
 
-      if (!id) { msg("Selecciona un cliente", "#c4a35a"); return; }
-      if (isNaN(cantidad) || cantidad <= 0) { msg("Cantidad debe ser mayor a 0", "#c4a35a"); return; }
+          const id = document.getElementById(selId).value;
+          let cantidad = parseFloat(document.getElementById(cantId).value);
 
-      // Buscar usuario actual
-      const usuario = usuarios.find(u => u.id == id);
-      if (!usuario) { msg("Cliente no encontrado", "#c0392b"); return; }
+          if (!id) { msg("Selecciona un cliente", "#c4a35a"); return; }
+          if (isNaN(cantidad) || cantidad <= 0) { msg("Introduce una cantidad válida", "#c4a35a"); return; }
 
-      // Calcular nuevo dinero
-      const nuevoDinero = tipo === "ingresar"
-        ? usuario.dinero + cantidad
-        : usuario.dinero - cantidad;
+          if (tipo === "retirar") {
+              cantidad = -cantidad;
+          }
 
-      fetch(API + "/" + id, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: usuario.nombre,
-          contrasena: usuario.contrasena,
-          dinero: nuevoDinero
-        })
-      })
-        .then(() => {
-          const accion = tipo === "ingresar" ? "Ingresado" : "Retirado";
-          msg(accion + ": " + cantidad.toFixed(2) + " $", "#27ae60");
-          document.getElementById(cantId).value = "";
-          listar();
-        })
-        .catch(() => msg("Error en la operacion", "#c0392b"));
-    }
+          try {
+              const res = await fetch(`${API}/${id}/dinero`, {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(cantidad)
+              });
 
-    function msg(texto, color) {
-      const el = document.getElementById("mensaje");
-      el.textContent = texto;
-      el.style.color = color;
-    }
+              if (res.ok) {
+                  const textoRes = await res.text();
+                  if (!textoRes) {
+                      alert("¡CUENTA CERRADA! El saldo ha bajado de 0€ y el cliente ha sido eliminado.");
+                  } else {
+                      msg("Operación realizada con éxito", "#27ae60");
+                  }
 
-    listar();
+                  document.getElementById(cantId).value = "";
+                  listar();
+              }
+          } catch (error) {
+              msg("Error en la conexión", "#c0392b");
+          }
+      }
+
+      function msg(texto, color) {
+          const el = document.getElementById("mensaje");
+          el.textContent = texto;
+          el.style.color = color;
+      }
+
+      window.onload = listar;
   </script>
 
 </body>
